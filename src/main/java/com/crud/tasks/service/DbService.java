@@ -6,14 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class DbService {
     @Autowired
-    private TaskRepository repositoriy;
+    private TaskRepository repository;
+
     public List<Task>getAllTasks(){
-        return repositoriy.findAll();
+        return repository.findAll();
     }
+
     public Task findTaskById(final Long id){
-        return repositoriy.findOne( id );
+        return repository.findOne(id);
     }
 }
