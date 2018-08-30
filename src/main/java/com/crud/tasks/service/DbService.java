@@ -13,4 +13,7 @@ public class DbService {
     public List<Task>getAllTasks(){
         return repositoriy.findAll();
     }
+    public Task findTaskById(final Long id){
+        return repositoriy.findOne( id );
+    }
 }
