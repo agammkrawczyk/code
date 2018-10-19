@@ -29,9 +29,12 @@ public class TrelloClientTest {
     public void shouldFetchTrelloBoards() throws URISyntaxException {
         //Given
         TrelloBoardDto[] trelloBoards = new TrelloBoardDto[1];
-        trelloBoards[0] = new TrelloBoardDto("test_id", "test_board", new ArrayList<>());
-
-       URI uri = new URI("http://test.com/members/" + trelloConfig.getUsername() + "/boards?key=test&token=test&fields=name,id&lists=all");
+        trelloBoards[0] = new TrelloBoardDto("test_board", "test_id", new ArrayList<>());
+        when(trelloConfig.getTrelloApiEndpoint()).thenReturn( "http://test.com" );
+        when( trelloConfig.getUsername() ).thenReturn( "username" );
+        when( trelloConfig.getTrelloAppKey() ).thenReturn( "test" );
+        when( trelloConfig.getTrelloToken() ).thenReturn( "test" );
+       URI uri = new URI("http://test.com/members/username/boards?key=test&token=test&fields=name,id&lists=all");
       //  URI uri = new URI("http://test.com/members/agnieszkakrawczyk9/boards?key=test&token=test&fields=name,id&lists=all");
 
         when(restTemplate.getForObject(uri, TrelloBoardDto[].class)).thenReturn(trelloBoards);
