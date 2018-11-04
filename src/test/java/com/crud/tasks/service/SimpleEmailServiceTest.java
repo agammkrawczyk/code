@@ -23,7 +23,7 @@ public class SimpleEmailServiceTest {
 @Test
 public void shuldSendEmail(){
     //Given
-    Mail mail= new Mail("test@test.com","Test","test");
+    Mail mail= new Mail("test@test.com","Test","test",null);
     SimpleMailMessage mailmessage=new SimpleMailMessage();
     mailmessage.setTo(mail.getMailTo());
     mailmessage.setSubject( mail.getSubject() );
@@ -33,4 +33,18 @@ public void shuldSendEmail(){
     //Then
     verify(javaMailSender,times(1)).send(mailmessage);
 }
-}
+    @Test
+    public void shuldSendCCEmail() {
+        //Given
+        Mail mail = new Mail("test@test.com", "Test", "Test Message","test@test.com");
+
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(mail.getMailTo());
+        mailMessage.setSubject(mail.getSubject());
+        mailMessage.setText(mail.getMessage());
+        mailMessage.setCc( mail.getToCC() );
+        //When
+        simpleEmailService.send(mail);
+        //Then
+        verify(javaMailSender, times(1)).send(mailMessage);
+}}
