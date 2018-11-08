@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -61,8 +63,13 @@ public class DbServiceTestSuit {
 
     @Test
     public void saveTaskTest() {
-    //Given
+        //Given
+        List<Task> taskList = new ArrayList<>();
         Task task1 = new Task( 1L, "task", "test" );
+        Task task2 = new Task( 2L, "title", "test" );
+        taskList.add( task1 );
+        taskList.add( task2 );
+        Long id = 1L;
         when( taskRepository.save( task1 ) ).thenReturn( (task1) );
         //When
         Task taskSaved = dbService.saveTask( task1 );
@@ -73,7 +80,15 @@ public class DbServiceTestSuit {
 
     }
 
-
-}
-
-
+       @Test
+    public void shouldDeleteTask() {
+        //Given
+        Task task = new Task(1l, "task", "test task");
+        dbService.saveTask(task);
+        Long id = 1L;
+        //When
+        dbService.deleteTaskID(id);
+        //Then
+        verify(taskRepository, times(1)).delete(id);
+    }
+    }
