@@ -1,8 +1,5 @@
 package com.crud.tasks.trello.facade;
-import com.crud.tasks.domain.TrelloBoard;
-import com.crud.tasks.domain.TrelloBoardDto;
-import com.crud.tasks.domain.TrelloList;
-import com.crud.tasks.domain.TrelloListDto;
+import com.crud.tasks.domain.*;
 import com.crud.tasks.service.TrelloService;
 import com.crud.tasks.trello.mappper.TrelloMapper;
 import com.crud.tasks.trello.validator.TrelloValidator;
