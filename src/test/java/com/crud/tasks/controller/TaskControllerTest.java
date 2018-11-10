@@ -25,6 +25,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -41,8 +43,7 @@ public class TaskControllerTest {
     DbService dbService;
     @MockBean
     TaskMapper taskMapper;
-    @MockBean
-    TaskRepository taskRepository;
+
 
     @Test
     public void shouldGetTasks() throws Exception {
@@ -55,7 +56,7 @@ public class TaskControllerTest {
         dtoTasksList.add( new TaskDto( 3l, "title 3", "cont 3" ) );
 
         when( dbService.getAllTasks() ).thenReturn( taskskList );
-        when( taskMapper.mapToTaskDtoList( taskskList ) ).thenReturn( dtoTasksList );
+        when( taskMapper.mapToTaskDtoList( any() ) ).thenReturn( dtoTasksList );
         //When&Then
         mockMvc.perform( get( "/v1/task/getTasks" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isOk() )
@@ -95,9 +96,9 @@ public class TaskControllerTest {
         List<TaskDto> dtoTasksList = new ArrayList<>();
         dtoTasksList.add( new TaskDto( 3l, "test", "cont" ) );
         dtoTasksList.add( taskDto );
-        when( taskMapper.mapToTask( taskDto ) ).thenReturn( task );
-        when( dbService.saveTask( task ) ).thenReturn( task );
-        when( taskMapper.mapToTaskDto( task ) ).thenReturn( taskDto );
+        when( taskMapper.mapToTask( any()) ).thenReturn( task );
+        when( dbService.saveTask( any()) ).thenReturn( task );
+        when( taskMapper.mapToTaskDto( any()) ).thenReturn( taskDto );
 
         Gson gson = new Gson();
         String jsonContent = gson.toJson( taskDto );
@@ -107,18 +108,17 @@ public class TaskControllerTest {
                 .contentType( MediaType.APPLICATION_JSON )
                 .characterEncoding( "UTF-8" )
                 .content( jsonContent ) )
-                .andExpect( status().is( 200 ) );
+                .andExpect( status().is( 200 ) )
+                .andExpect( jsonPath("$.title",is("test")))
+                .andExpect( jsonPath( "$.id",is( 2) ) );
     }
-
     @Test
     public void shouldCreateTask() throws Exception {
         //Given
         Task task = new Task( 3L, "test", "cont" );
         TaskDto taskDto = new TaskDto(  3L , "test", "cont" );
-
-        when( taskMapper.mapToTask( taskDto ) ).thenReturn( task );
-        when( dbService.saveTask( task ) ).thenReturn( task );
-
+        when( dbService.saveTask( any()) ).thenReturn( task );
+        when( taskMapper.mapToTask( any()) ).thenReturn( task );
         Gson gson = new Gson();
         String jsonContent = gson.toJson( task );
 
@@ -128,7 +128,10 @@ public class TaskControllerTest {
                 .param( "taskId", "3" )
                 .characterEncoding( "UTF-8" )
                 .content( jsonContent ) )
-                .andExpect( status().is( 200 ) )
+                .andExpect( status().is( 200 ) );
+           //     .andExpect( jsonPath( "$",hasSize( 0 ) ) );
+
+        verify(dbService, times(1)).saveTask(task);
 
         ;
 
