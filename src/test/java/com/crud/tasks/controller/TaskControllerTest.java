@@ -3,7 +3,7 @@ package com.crud.tasks.controller;
 import com.crud.tasks.domain.Task;
 import com.crud.tasks.domain.TaskDto;
 import com.crud.tasks.mapper.TaskMapper;
-import com.crud.tasks.repository.TaskRepository;
+
 import com.crud.tasks.service.DbService;
 import com.google.gson.Gson;
 import org.junit.Test;
@@ -28,9 +28,7 @@ import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -72,7 +70,7 @@ public class TaskControllerTest {
     public void getTaskTest() throws Exception {
         //Given
         Task task = new Task( 1L, "test", "cont" );
-        TaskDto taskDto = new TaskDto(  1L, "test", "cont" );
+        TaskDto taskDto = new TaskDto( 1L, "test", "cont" );
 
         when( dbService.getTask( any( Long.class ) ) ).thenReturn( Optional.of( task ) );
         when( taskMapper.mapToTaskDto( task ) ).thenReturn( taskDto );
@@ -91,14 +89,14 @@ public class TaskControllerTest {
     @Test
     public void shouldUpdateTask() throws Exception {
         //Given
-        Task task = new Task(  2l , "test", "cont" );
-        TaskDto taskDto = new TaskDto( 2l , "test", "cont" );
+        Task task = new Task( 2l, "test", "cont" );
+        TaskDto taskDto = new TaskDto( 2l, "test", "cont" );
         List<TaskDto> dtoTasksList = new ArrayList<>();
         dtoTasksList.add( new TaskDto( 3l, "test", "cont" ) );
         dtoTasksList.add( taskDto );
-        when( taskMapper.mapToTask( any()) ).thenReturn( task );
-        when( dbService.saveTask( any()) ).thenReturn( task );
-        when( taskMapper.mapToTaskDto( any()) ).thenReturn( taskDto );
+        when( taskMapper.mapToTask( any() ) ).thenReturn( task );
+        when( dbService.saveTask( any() ) ).thenReturn( task );
+        when( taskMapper.mapToTaskDto( any() ) ).thenReturn( taskDto );
 
         Gson gson = new Gson();
         String jsonContent = gson.toJson( taskDto );
@@ -109,16 +107,17 @@ public class TaskControllerTest {
                 .characterEncoding( "UTF-8" )
                 .content( jsonContent ) )
                 .andExpect( status().is( 200 ) )
-                .andExpect( jsonPath("$.title",is("test")))
-                .andExpect( jsonPath( "$.id",is( 2) ) );
+                .andExpect( jsonPath( "$.title", is( "test" ) ) )
+                .andExpect( jsonPath( "$.id", is( 2 ) ) );
     }
+
     @Test
     public void shouldCreateTask() throws Exception {
         //Given
         Task task = new Task( 3L, "test", "cont" );
-        TaskDto taskDto = new TaskDto(  3L , "test", "cont" );
-        when( dbService.saveTask( any()) ).thenReturn( task );
-        when( taskMapper.mapToTask( any()) ).thenReturn( task );
+        TaskDto taskDto = new TaskDto( 3L, "test", "cont" );
+        when( dbService.saveTask( any() ) ).thenReturn( task );
+        when( taskMapper.mapToTask( any() ) ).thenReturn( task );
         Gson gson = new Gson();
         String jsonContent = gson.toJson( task );
 
@@ -129,17 +128,33 @@ public class TaskControllerTest {
                 .characterEncoding( "UTF-8" )
                 .content( jsonContent ) )
                 .andExpect( status().is( 200 ) );
-           //     .andExpect( jsonPath( "$",hasSize( 0 ) ) );
+        //     .andExpect( jsonPath( "$",hasSize( 0 ) ) );
 
-        verify(dbService, times(1)).saveTask(task);
+        verify( dbService, times( 1 ) ).saveTask( task );
 
-        ;
+    }
 
+    @Test
+    public void shouldDeleteTask() throws Exception {
+        //Given
+        Task task = new Task( 1L, "Task", "Content" );
+        TaskDto taskDto = new TaskDto( 1L, "Task", "Content" );
+        when( taskMapper.mapToTaskDto( task ) ).thenReturn( taskDto );
+
+        //When & Then
+        mockMvc.perform( delete( "/v1/task/deleteTask" )
+                .param( "taskId", "1" )
+                .contentType( MediaType.APPLICATION_JSON ) )
+                .andExpect( status().isOk() );
+
+        verify( dbService, times( 1 ) ).deleteTaskID( any() );
 
 
     }
-}
 
+
+
+}
 
 
 
